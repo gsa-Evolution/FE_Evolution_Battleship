@@ -1,0 +1,119 @@
+@keyframes slideInOut {
+  0% {
+    width: 100vw;
+  }
+  50% {
+    width: 0vw;
+  }
+  100% {
+    width: 100vw;
+  }
+  0% {
+    left: 0;
+    width: 100vw;
+  }
+  50% {
+    left: 100vw;
+    width: 0vw;
+  }
+  100% {
+    left: 0;
+    width: 100vw;
+  }
+}
+
+.placement-overlay-before {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  animation: slideInOut 10s linear infinite;
+  pointer-events: none;
+  background-color: var(--classicBlue);
+}
+
+.hidden {
+  animation: none;
+}
+
+.placement-overlay-after {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    animation: slideInOut 6.5s linear infinite;
+    pointer-events: none;
+    background-color: var(--classicBlue);
+}
+
+.hidden {
+    animation: none;
+}
+
+.board {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    width: 100vw;
+    pointer-events: none;
+    background-color: var(--classicBlue);
+}
+
+.hidden {
+    background-color: transparent;
+}
+
+@keyframes fadeInOutWinner {
+    0% {
+        background-color: rgba(0, 70, 128, 0);
+    }
+    50% {
+        background-color: rgba(0, 70, 128, 1);
+    }
+    100% {
+        background-color: rgba(0, 70, 128, 0);
+    }
+}
+
+@keyframes fadeInOutLoser {
+  0% {
+      background-color: rgba(0, 70, 128, 0.75);
+  }
+  50% {
+      background-color: rgba(0, 70, 128, 1);
+  }
+  100% {
+      background-color: rgba(0, 70, 128, 0.75);
+  }
+}
+
+.result-game-winner {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    animation: fadeInOutWinner 1s linear infinite;
+    pointer-events: none;
+    background-color: rgba(0, 70, 128, 0);
+}
+
+.hidden {
+    animation: none;
+}
+
+.result-game-loser {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    animation: fadeInOutLoser 3s linear infinite;
+    pointer-events: none;
+    background-color: rgba(0, 70, 128, 0);
+}
+
+.hidden {
+    animation: none;
+}

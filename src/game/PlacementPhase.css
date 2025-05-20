@@ -1,0 +1,152 @@
+.waiting-title {
+  font-family: 'Inter', sans-serif;
+  font-size: 1.5rem;
+  font-weight: normal;
+  text-align: center;
+  white-space: nowrap;
+  margin: 0;
+}
+
+.waiting-title span.room-name {
+  font-weight: bold;
+  color: var(--turquoiseBlue);
+}
+
+.waiting-phrase {
+  font-family: 'Inter', sans-serif;
+  font-size: 1rem;
+  color: var(--white);
+  text-align: center;
+  margin: 10px 0;
+  margin-top: 30px;
+}
+
+.rotate-button {
+  margin-bottom: 20px;
+  padding: 10px 20px;
+  font-size: 16px;
+  margin-top: 0px;
+  color: var(--classicBlue);
+  border: 2px solid transparent;
+  transition: border 0.3s ease;
+  position: absolute;
+  top: 60px;
+  left: 0;
+  background-image: url('../assets/images/Rotate.svg'); /* Replace with your PNG path */
+}
+
+.rotate-button:hover {
+  border: 2px solid var(--duckEggBlue);
+}
+
+.random-button {
+  margin-bottom: 20px;
+  padding: 10px 20px;
+  font-size: 16px;
+  margin-top: 0px;
+  color: var(--classicBlue);
+  border: 2px solid transparent;
+  transition: border 0.3s ease;
+  position: absolute;
+  top: 0;
+  left: 0;
+  background-image: url('../assets/images/Random.svg'); /* Replace with your PNG path */
+}
+
+.random-button:hover {
+  border: 2px solid var(--duckEggBlue);
+}
+
+.placement-instructions {
+  font-family: 'Inter', sans-serif;
+  color: var(--white);
+  font-size: 1.3rem;
+  text-align: center;
+  font-weight: bold;
+}
+
+.waiting-container {
+  background-color: rgba(0, 70, 128, 0.9);
+  border-radius: 30px;
+  padding: 30px;
+}
+
+.full-background {
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+.icon-button {
+  width: 50px;
+  height: 50px;
+  background-size: cover;
+  background-color: transparent;
+  border: white 2px solid;
+  cursor: pointer;
+}
+
+.bottom-buttons {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 10px;
+  margin-bottom: -100px;
+}
+
+.back-to-lobby-button-placement {
+  padding: 10px 10px;
+  font-size: 16px;
+  background-color: var(--white);
+  color: var(--classicBlue);
+  margin-top: 30px;
+  border: 2px solid transparent;
+  transition: border 0.3s ease;
+}
+
+.back-to-lobby-button-placement:hover {
+  border: 2px solid var(--duckEggBlue);
+}
+
+.place-ships-button {
+  padding: 10px 50px;
+  font-size: 16px;
+  background-color: var(--turquoiseBlue);
+  color: var(--white);
+  margin-top: 30px;
+  border: 2px solid transparent;
+  transition: border 0.3s ease;
+}
+
+.place-ships-button:hover {
+  border: 2px solid var(--white);
+}
+
+.button-container {
+  position: relative;
+  height: 100px;
+  width: 50px;
+}
+
+.room-name {
+  color: var(--turquoiseBlue);
+}
+
+.cell-animate {
+  animation: pulse 1s ease-in-out;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+    background-color: #5bc2e7;
+  }
+  50% {
+    transform: scale(1.2);
+    background-color: #4aa3c1;
+  }
+  100% {
+    transform: scale(1);
+    background-color: #5bc2e7;
+  }
+}

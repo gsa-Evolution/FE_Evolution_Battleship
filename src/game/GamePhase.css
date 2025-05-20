@@ -1,0 +1,217 @@
+.game-phase-container {
+  text-align: center;
+  margin-top: -75px;
+  margin-bottom: -30px;
+  position: relative;
+  background-color: rgba(0, 70, 128, 0.9);
+  border-radius: 30px;
+  padding: 30px;
+}
+
+.game-result {
+    font-family: 'Inter', sans-serif;
+    color: var(--white);
+    font-size: 1.3rem;
+}
+
+.room-name {
+    color: var(--turquoiseBlue);
+}
+
+.loading-gamestate {
+    font-family: 'Inter', sans-serif;
+    color: var(--white);
+    font-size: 1.5rem;
+}
+
+.player-name {
+    color: var(--white);
+    margin-bottom: 5px;
+    z-index: 2;
+}
+
+.opponent-name {
+    color: var(--white);
+    margin-bottom: 5px;
+}
+
+.overlay-opponent-turn {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 70, 128, 0.75);
+  z-index: 1;
+}
+
+.player-turn {
+    color: var(--white);
+    font-size: 2rem;
+    width: 100%;
+    margin-top: 40px;
+    margin-bottom: 40px;
+    text-align: center;
+    position: relative;
+    z-index: 2;
+}
+
+.board-container {
+  display: grid;
+  grid-template-columns: repeat(10, 30px);
+}
+
+.board-cell {
+  width: 30px;
+  height: 30px;
+  border: 1px solid rgba(255, 255, 255, 0.75);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.board-cell-opponent {
+    width: 30px;
+    height: 30px;
+    border: 1px solid var(--white);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.board-cell.ship {
+  background-color: var(--coolGrey);
+}
+
+.board-cell.default {
+  background-color: var(--classicBlue);
+}
+
+.board-cell.hit {
+  background-color: red;
+}
+
+.board-cell.miss {
+  background-color: var(--lightBlue);
+}
+
+.board-cell.hit-opponent {
+    background-color: red;
+}
+
+.board-cell.miss-opponent {
+    background-color: var(--lightBlue);
+}
+
+.board-cell.attacked {
+  animation: attack-animation 0.5s ease-out;
+}
+
+@keyframes attack-animation {
+  0% {
+    transform: scale(1);
+    background-color: yellow;
+  }
+  50% {
+    transform: scale(1.2);
+    background-color: orange;
+  }
+  100% {
+    transform: scale(1);
+    background-color: inherit;
+  }
+}
+
+/* Animation for a hit */
+.board-cell.attacked-hit {
+  animation: hit-animation 0.5s ease-in-out;
+}
+
+@keyframes hit-animation {
+  0% {
+    background-color: red;
+    transform: scale(1);
+  }
+  50% {
+    background-color: darkred;
+    transform: scale(1.5);
+  }
+  100% {
+    background-color: red;
+    transform: scale(1);
+  }
+}
+
+/* Animation for a miss */
+.board-cell.attacked-miss {
+  animation: miss-animation 0.5s ease-in-out;
+}
+
+@keyframes miss-animation {
+  0% {
+    background-color: lightblue;
+    transform: scale(1);
+  }
+  50% {
+    background-color: darkblue;
+    transform: scale(1.5);
+  }
+  100% {
+    background-color: lightblue;
+    transform: scale(1);
+  }
+}
+
+.opponent-sunk-ships {
+    position: relative;
+    transform: translate(-400px, 50px);
+}
+
+.player-sunk-ships {
+    position: relative;
+    transform: translate(400px, 10px);
+    z-index: 2;
+}
+
+.back-to-lobby-button {
+  font-family: 'Inter', sans-serif;
+  padding: 10px 10px;
+  margin-top: 50px;
+  font-size: 16px;
+  color: var(--classicBlue);
+  background-color: var(--white);
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: border 0.3s ease;
+  position: relative;
+  z-index: 2;
+}
+  
+.back-to-lobby-button:hover {
+  border: 2px solid var(--duckEggBlue);
+}
+
+.evolution-logo {
+    width: 20px; /* Adjust size as needed */
+    height: 20px;
+    margin-right: 8px; /* Add spacing between the logo and the text */
+    vertical-align: middle;
+}
+
+.back-to-lobby-button-endgame {
+    font-family: 'Inter', sans-serif;
+    padding: 10px 10px;
+    margin-top: 30px;
+    font-size: 16px;
+    color: var(--classicBlue);
+    background-color: var(--white);
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: border 0.3s ease;
+    position: relative;
+    z-index: 2;
+}
+
+.back-to-lobby-button-endgame:hover {
+    border: 2px solid var(--duckEggBlue);
+}

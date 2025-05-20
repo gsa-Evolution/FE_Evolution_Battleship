@@ -1,0 +1,138 @@
+.lobby-container {
+  font-family: 'Inter', sans-serif;
+  background-color: rgba(0, 70, 128, 0.9);
+  border-radius: 20px;
+  padding-left: 100px;
+  padding-right: 100px;
+  max-width: 600px;
+  margin: auto;
+}
+
+.logo {
+    margin-bottom: 10px;
+}
+
+.welcome {
+    font-size: 2.5rem;
+}
+
+.error-message {
+  color: red;
+  margin-bottom: 20px;
+}
+
+.button-container-lobby {
+  display: flex;
+  margin-top: 30px;
+  gap: 2px;
+}
+
+.change-profile-button,
+.create-room-button {
+  font-family: 'Inter', sans-serif;
+  font-size: 16px;
+  padding: 10px 25px;
+  border-radius: 10px;
+}
+
+.change-profile-button {
+  background-color: var(--coral);
+  color: var(--white);
+  border: 2px solid transparent;
+}
+
+.change-profile-button:hover {
+    border: 2px solid var(--white);
+}
+
+.create-room-button {
+  background-color: var(--turquoiseBlue);
+  color: var(--white);
+  border: 2px solid transparent;
+  margin-left: auto;
+}
+
+.create-room-button:hover {
+    border: 2px solid var(--white);
+}
+
+.rooms-table-container {
+  max-height: 500px;
+  overflow-y: auto;
+  border: 1px solid var(--coolGrey);
+  border-bottom: 2px solid var(--coolGrey);
+  border-top: 2px solid var(--coolGrey);
+}
+
+.rooms-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.rooms-table thead th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  padding: 8px;
+  text-align: center;
+}
+
+.rooms-table tbody td {
+  padding: 8px;
+  text-align: center;
+  border-bottom: 1px solid var(--coolGrey);
+}
+
+.rooms-table {
+  color: var(--white);
+  width: 100%;
+  margin: 0 auto;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+.rooms-table th,
+.rooms-table td {
+  background-color: var(--classicBlue);
+  padding: 15px;
+  border: 1px solid var(--coolGrey);
+  text-align: center;
+}
+
+.rooms-table th {
+  background-color: var(--classicBlue);
+}
+
+.join-room-button {
+  padding: 5px 10px;
+  font-size: 14px;
+  cursor: pointer;
+  background-color: var(--turquoiseBlue);
+  color: var(--white);
+  border: 1px solid transparent;
+  border-radius: 5px;
+}
+
+.join-room-button:hover {
+    border: 1px solid var(--white);
+}
+
+.join-room-button:disabled {
+    padding: 5px 10px;
+    font-size: 14px;
+    cursor: not-allowed;
+    background-color: var(--coolGrey);
+    color: var(--turquoiseBlue);
+    border: none;
+    border-radius: 5px;
+}
+
+.disabled-button {
+  padding: 5px 10px;
+  font-size: 14px;
+  cursor: not-allowed;
+  background-color: var(--coolGrey);
+  color: var(--turquoiseBlue);
+  border: none;
+  border-radius: 5px;
+}

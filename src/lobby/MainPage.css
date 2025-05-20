@@ -1,0 +1,79 @@
+body {
+    font-family: 'Inter', sans-serif;
+    background-image: url("../assets/images/Background.svg");
+    background-color: var(--classicBlue);
+    background-repeat: no-repeat;
+    background-position: center;
+    margin: 0;
+    padding: 0;
+  }
+  
+  .wrapper {
+    background-color: var(--classicBlue);
+    min-height: 100%;
+    padding-bottom: 50px;
+  }
+  
+  .transparent-box {
+    background-color: rgba(0, 70, 128, 0.9);
+    border-radius: 20px;
+    padding: 50px;
+    max-width: 600px;
+    margin: auto;
+    margin-top: 50px;
+  }
+  
+  .main-container {
+    text-align: center;
+    margin-top: 50px;
+  }
+  
+  .main-container h1 {
+    font-weight: normal;
+    font-size: 2rem;
+    margin-bottom: 20px;
+  }
+  
+  h1 {
+    color: var(--white);
+  }
+  
+  .main-container input {
+    margin: 20px 0;
+  }
+  
+  .input-container {
+    font-family: 'Inter', sans-serif;
+    margin-bottom: 20px;
+  }
+  
+  .input-container input {
+    font-family: 'Inter', sans-serif;
+    padding: 10px;
+    font-size: 16px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    width: 200px;
+  }
+  
+  .error-message {
+    color: red;
+    margin-bottom: 20px;
+  }
+  
+  .enter-button {
+    font-family: 'Inter', sans-serif;
+    font-size: 16px;
+    cursor: pointer;
+    background-Color: #FFFFFF;
+    color: var(--classicBlue);
+    border-radius: 5px;
+    font-weight: bold;
+    border: 2px solid transparent;
+    transition: border 0.3s ease;
+  }
+
+  .enter-button:hover {
+    border: 2px solid var(--duckEggBlue);
+  }
+  
