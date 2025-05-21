@@ -42,7 +42,7 @@
 }
 
 .change-profile-button:hover {
-    border: 2px solid var(--white);
+  border: 2px solid var(--white);
 }
 
 .create-room-button {
@@ -53,20 +53,29 @@
 }
 
 .create-room-button:hover {
-    border: 2px solid var(--white);
+  border: 2px solid var(--white);
 }
 
 .rooms-table-container {
-  max-height: 500px;
+  max-height: 496px;
   overflow-y: auto;
   border: 1px solid var(--coolGrey);
-  border-bottom: 2px solid var(--coolGrey);
-  border-top: 2px solid var(--coolGrey);
 }
 
 .rooms-table {
+  border-collapse: separate;
+  color: var(--white);
   width: 100%;
-  border-collapse: collapse;
+  margin: 0 auto;
+  border-spacing: 0;
+}
+
+.rooms-table th,
+.rooms-table td {
+  background-color: var(--classicBlue);
+  padding: 15px;
+  border: 0.5px solid var(--coolGrey);
+  text-align: center;
 }
 
 .rooms-table thead th {
@@ -83,24 +92,9 @@
   border-bottom: 1px solid var(--coolGrey);
 }
 
-.rooms-table {
-  color: var(--white);
-  width: 100%;
-  margin: 0 auto;
-  border-collapse: collapse;
-  margin-top: 20px;
-}
-
-.rooms-table th,
-.rooms-table td {
-  background-color: var(--classicBlue);
-  padding: 15px;
-  border: 1px solid var(--coolGrey);
-  text-align: center;
-}
-
 .rooms-table th {
   background-color: var(--classicBlue);
+  border-bottom: 1px solid var(--coolGrey);
 }
 
 .join-room-button {
@@ -114,7 +108,7 @@
 }
 
 .join-room-button:hover {
-    border: 1px solid var(--white);
+  border: 1px solid var(--white);
 }
 
 .join-room-button:disabled {

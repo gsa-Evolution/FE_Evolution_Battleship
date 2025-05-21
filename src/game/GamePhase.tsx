@@ -3,11 +3,12 @@ import { useParams, useNavigate } from "react-router-dom";
 import { usePlayer } from "../lobby/PlayerContext";
 import { RoomState, CellType, Coordinate, BoardCell, GameState, GameResult, shipLengths } from "../types/types";
 import { GameBoard, ResultGameWinner, ResultGameLoser } from "../components/Overlay";
-import { getRoomList, playBackButtonSound } from "../utils/utils";
+import { getRoomList, getTurnLabel, playBackButtonSound } from "../utils/utils";
 import StartGame from "../assets/sounds/Game/Start_Game.wav";
 import GameBackground from "../assets/sounds/Game/Game_Background.wav";
 import EvolutionLogo from "../assets/images/Logo.svg";
 import "./GamePhase.css";
+import config from "../config";
 
 const GamePhase: React.FC = () => {
   const { roomId } = useParams<{ roomId: string }>();
@@ -99,7 +100,7 @@ const GamePhase: React.FC = () => {
   }, [gameState]);
 
   useEffect(() => {
-    const ws = new WebSocket(`ws://localhost:8000/join/${roomId}/${playerName}`);
+    const ws = new WebSocket(`${config.protocol === "http" ? "ws" : "wss"}://${config.baseUrl}/join/${roomId}/${playerName}`);
     wsRef.current = ws;
 
     ws.onopen = () => {
@@ -189,7 +190,7 @@ const GamePhase: React.FC = () => {
     if (!gameState?.yourTurn) {
       setShowOpponentOverlay(true);
     } else {
-      setShowOpponentOverlay(false); // Hide overlay when it's the player's turn
+      setShowOpponentOverlay(false);
     }
   }, [gameState?.yourTurn]);
 
@@ -247,7 +248,7 @@ const GamePhase: React.FC = () => {
   useEffect(() => {
     if (gameResult && startGameAudioRef.current) {
       startGameAudioRef.current.pause();
-      startGameAudioRef.current.currentTime = 0; // Reset the audio
+      startGameAudioRef.current.currentTime = 0;
     }
   }, [gameResult]);
 
@@ -257,7 +258,7 @@ const GamePhase: React.FC = () => {
   useEffect(() => {
     if (gameResult?.winner === playerName) {
       const victorySound = new Audio(new URL("../assets/sounds/Game/Victory/Victory.wav", import.meta.url).toString());
-      victorySound.loop = true; // Enable looping
+      victorySound.loop = true;
       victorySound.play().catch((error) => console.error("Victory sound playback failed:", error));
       victorySoundRef.current = victorySound;
     } else if (gameResult?.loser === playerName) {
@@ -267,7 +268,7 @@ const GamePhase: React.FC = () => {
       ];
       const randomDefeatSound = defeatSounds[Math.floor(Math.random() * defeatSounds.length)];
       const defeatSound = new Audio(new URL(randomDefeatSound, import.meta.url).toString());
-      defeatSound.loop = true; // Enable looping
+      defeatSound.loop = true;
       defeatSound.play().catch((error) => console.error("Defeat sound playback failed:", error));
       defeatSoundRef.current = defeatSound;
     }
@@ -588,7 +589,7 @@ const GamePhase: React.FC = () => {
       previousOpponentBoard.current = gameState.opponentBoard
         ? [...gameState.opponentBoard]
         : null;
-      return; // Skip playing sound on first load
+      return;
     }
 
     if (
@@ -719,10 +720,12 @@ const GamePhase: React.FC = () => {
         <h2 className="opponent-name">{opponentName}</h2>
         {renderBoardOpponent(gameState.opponentBoard, true)}
 
-        <h1 className="player-turn">{gameState.yourTurn ? playerName + "'s Turn" : opponentName + "'s Turn"}</h1>
+        <h1 className="player-turn">
+          {gameState.yourTurn ? getTurnLabel(playerName) : getTurnLabel(opponentName || "Unknown")}
+        </h1>
         {error && <p style={{ color: "red" }}>{error}</p>}
 
-        <h2 className="player-name" style={{ opacity: gameState.yourTurn ? 0.35 : 1 }}>
+        <h2 className="player-name" style={{ opacity: gameState.yourTurn ? 0.35 : 1, position: gameState.yourTurn ? "static" : "relative" }}>
           {playerName}
         </h2>
         {renderBoardPlayer(gameState.yourBoard, false)}

@@ -10,12 +10,14 @@ import RandomButton1 from "../assets/sounds/Placement/Placement/Random/Random1.w
 import RandomButton2 from "../assets/sounds/Placement/Placement/Random/Random2.wav";
 import PlaceShips from "../assets/sounds/Placement/Placement/PlaceShips/Place_Ships.wav";
 import { playBackButtonSound } from "../utils/utils";
+import config from "../config";
 
 const PlacementPhase: React.FC = () => {
   const { roomId } = useParams<{ roomId: string }>();
   const navigate = useNavigate();
   const wsRef = useRef<WebSocket | null>(null);
   const { playerName } = usePlayer();
+  const audioRefs = useRef<HTMLAudioElement[]>([]);
 
   const [roomName, setRoomName] = useState<string | null>(null);
   const [placements, setPlacements] = useState<Placement[]>([]);
@@ -27,8 +29,6 @@ const PlacementPhase: React.FC = () => {
   const [waitingForOpponentEnterRoom, setWaitingForOpponentEnterRoom] = useState(true);
   const [waitingForOpponentStartGame, setWaitingForOpponentStartGame] = useState(false);
   const [animatedCells, setAnimatedCells] = useState<{ row: number; column: number }[]>([]);
-
-  const audioRefs = useRef<HTMLAudioElement[]>([]);
 
   const playRandomSoundLoop = (folder: string) => {
     stopAllSounds();
@@ -248,16 +248,16 @@ const PlacementPhase: React.FC = () => {
 
     const generateRandomPlacement = (shipType: ShipType): Placement | null => {
       const length = shipLengths[shipType];
-      const maxAttempts = 100; // Limit the number of attempts to avoid infinite loops
+      const maxAttempts = 100;
   
       for (let attempts = 0; attempts < maxAttempts; attempts++) {
         const orientation = Math.random() > 0.5 ? "Horizontal" : "Vertical";
-        const maxRow = orientation === "Horizontal" ? 10 : length - 1; // Ensure vertical ships start within
+        const maxRow = orientation === "Horizontal" ? 10 : length - 1;
         const maxColumn = orientation === "Horizontal" ? 10 - length : 10;
   
         const row = orientation === "Horizontal"
           ? Math.floor(Math.random() * maxRow)
-          : Math.floor(Math.random() * (10 - maxRow)) + maxRow; // Adjust for vertical placement
+          : Math.floor(Math.random() * (10 - maxRow)) + maxRow;
         const column = Math.floor(Math.random() * maxColumn);
   
         const newPlacement: Placement = {
@@ -301,7 +301,7 @@ const PlacementPhase: React.FC = () => {
     }
   
     setPlacements(newPlacements);
-    setAnimatedCells(allAnimatedCells); // Trigger animation for all placed cells
+    setAnimatedCells(allAnimatedCells);
     setError(null);
   
     setTimeout(() => setAnimatedCells([]), 1000);
@@ -322,7 +322,7 @@ const PlacementPhase: React.FC = () => {
   }, [playerName, navigate]);
 
   useEffect(() => {
-    const ws = new WebSocket(`ws://localhost:8000/join/${roomId}/${playerName}`);
+    const ws = new WebSocket(`${config.protocol === "http" ? "ws" : "wss"}://${config.baseUrl}/join/${roomId}/${playerName}`);
     wsRef.current = ws;
 
     ws.onopen = () => {
@@ -380,10 +380,10 @@ const PlacementPhase: React.FC = () => {
   useEffect(() => {
     const fetchRoomDetails = async () => {
       try {
-        const rooms = await getRoomList(); // Fetch all rooms
-        const room = rooms.find((r: { id: string }) => r.id === roomId); // Find the room by roomId
+        const rooms = await getRoomList();
+        const room = rooms.find((r: { id: string }) => r.id === roomId);
         if (room) {
-          setRoomName(room.roomName.toString()); // Set the room name
+          setRoomName(room.roomName.toString());
         } else {
           console.error("Room not found");
         }

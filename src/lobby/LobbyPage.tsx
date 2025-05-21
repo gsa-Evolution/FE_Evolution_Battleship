@@ -9,6 +9,7 @@ import ButtonForwardAudio from "../assets/sounds/UI/Button_Forward.wav";
 import ButtonProfileAudio from "../assets/sounds/UI/Button_Profile.wav";
 import { getRoomList } from "../utils/utils";
 import "./LobbyPage.css";
+import config from "../config";
 
 const LobbyPage: React.FC = () => {
   const [rooms, setRooms] = useState<RoomState[]>([]);  
@@ -39,10 +40,10 @@ const LobbyPage: React.FC = () => {
       }
     };
 
-    fetchRooms(); // Fetch rooms on component mount
+    fetchRooms();
 
-    const interval = setInterval(fetchRooms, 5000); // Refresh room list every 5 seconds
-    return () => clearInterval(interval); // Cleanup interval on component unmount
+    const interval = setInterval(fetchRooms, 5000);
+    return () => clearInterval(interval);
   }, []);
 
   useEffect(() => {
@@ -66,22 +67,22 @@ const LobbyPage: React.FC = () => {
     }, 2000);
     const timerBackground = setTimeout(() => {
       audioBackground.play().catch((err) => console.error("Error playing audio:", err));
-    }); // Delay playback by 2 seconds
+    });
 
     return () => {
-      clearTimeout(timerStart); // Clear the timeout on unmount
-      audioStart.pause(); // Stop the audio
-      audioStart.currentTime = 0; // Reset the audio
-      clearTimeout(timerBackground); // Clear the timeout on unmount
-      audioBackground.pause(); // Stop the audio
-      audioBackground.currentTime = 0; // Reset the audio
+      clearTimeout(timerStart);
+      audioStart.pause();
+      audioStart.currentTime = 0;
+      clearTimeout(timerBackground);
+      audioBackground.pause();
+      audioBackground.currentTime = 0;
     };
   }, []);
 
   const joinRoom = async (room: RoomState) => {
-    playButtonSound(); // Play the sound when the button is clicked
+    playButtonSound();
     try {
-      const ws = new WebSocket(`ws://localhost:8000/join/${room.id}/${playerName}`);
+      const ws = new WebSocket(`${config.protocol === "http" ? "ws" : "wss"}://${config.baseUrl}/join/${room.id}/${playerName}`);
 
       ws.onopen = () => {
         console.log("WebSocket connection established");
@@ -91,7 +92,7 @@ const LobbyPage: React.FC = () => {
 
       ws.onerror = (error) => {
         console.error("WebSocket error:", error);
-        setError("Failed to join room");
+        setError("Failed to join room.");
       };
 
       ws.onclose = () => {
@@ -99,14 +100,14 @@ const LobbyPage: React.FC = () => {
       };
     } catch (err) {
       console.error("Error joining room:", err);
-      setError("Error joining room");
+      setError("Error joining room.");
     }
   };
 
   const createRoom = async () => {
-    playButtonSound(); // Play the sound when the button is clicked
+    playButtonSound();
     try {
-      const response = await fetch(`http://localhost:8000/createGame`, {
+      const response = await fetch(`${config.protocol}://${config.baseUrl}/createGame`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

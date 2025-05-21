@@ -76,3 +76,9 @@ export const waitingAfterSentences = [
     "No one's quite ready, but something is already starting in the strange hum of the ",
     "The game forgets its rules for a moment, lost in the spinning mind of the "
 ];
+
+export const getTurnLabel = (name: string) => {
+  if (!name) return "";
+  const lastChar = name.trim().slice(-1).toLowerCase();
+  return lastChar === "s" ? `${name}' Turn` : `${name}'s Turn`;
+};
