@@ -60,7 +60,7 @@ const LobbyPage: React.FC = () => {
   useEffect(() => {
     const audioStart = new Audio(IntroLobbyAudio);
     const audioBackground = new Audio(IntroLobbyBackground);
-    audioBackground.loop = true; // Enable looping
+    audioBackground.loop = true;
 
     const timerStart = setTimeout(() => {
       audioStart.play().catch((err) => console.error("Error playing audio:", err));

@@ -1,9 +1,10 @@
 import { RoomState } from "../types/types";
 import ButtonBackAudio from "../assets/sounds/UI/Button_Back.wav";
+import config from "../config";
 
 export const getRoomList = async (): Promise<RoomState[]> => {
   try {
-    const response = await fetch("http://localhost:8000/rooms");
+    const response = await fetch(`${config.protocol}://${config.baseUrl}/rooms`);
     if (!response.ok) {
       throw new Error("Failed to fetch room list");
     }
