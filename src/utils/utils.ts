@@ -1,7 +1,9 @@
 import { RoomState } from "../types/types";
+import IntroSound from "../assets/sounds/Main/Intro.wav";
 import ButtonBackAudio from "../assets/sounds/UI/Button_Back.wav";
 import config from "../config";
 
+// Fetches the list of rooms from the backend API.
 export const getRoomList = async (): Promise<RoomState[]> => {
   try {
     const response = await fetch(`${config.protocol}://${config.baseUrl}/rooms`);
@@ -16,24 +18,19 @@ export const getRoomList = async (): Promise<RoomState[]> => {
   }
 };
 
+// Plays the back button sound effect.
 export const playBackButtonSound = () => {
   const audio = new Audio(ButtonBackAudio);
   audio.play();
 };
 
-export const createImpulseResponse = (context: AudioContext, duration: number, decay: number) => {
-    const sampleRate = context.sampleRate;
-    const length = sampleRate * duration;
-    const impulse = context.createBuffer(2, length, sampleRate);
-    for (let channel = 0; channel < impulse.numberOfChannels; channel++) {
-    const impulseData = impulse.getChannelData(channel);
-    for (let i = 0; i < length; i++) {
-        impulseData[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / length, decay);
-    }
-    }
-    return impulse;
+// Plays intro sound when starting.
+export const handlePlaySound = () => {
+  const audio = new Audio(IntroSound);
+  audio.play().catch((err) => console.error("Audio playback failed:", err));
 };
 
+// Sentences for the waiting screen before ship placement.
 export const waitingBeforeSentences = [
     "The stillness is overwhelming, as peaceful as the waters of the ",
     "Time seems to slow, as quiet as the waters of the ",
@@ -56,6 +53,7 @@ export const waitingBeforeSentences = [
     "The room feels frozen, as still as the waters of the "
 ];
 
+// Sentences for the waiting screen after ship placement.
 export const waitingAfterSentences = [
     "The board twitches with tension, as if unsure what's coming in the chaos of the ",
     "A strange energy buzzes through the air, building in the uncertainty of the ",
@@ -78,8 +76,23 @@ export const waitingAfterSentences = [
     "The game forgets its rules for a moment, lost in the spinning mind of the "
 ];
 
+// Returns the correct turn label for a given player name.
 export const getTurnLabel = (name: string) => {
   if (!name) return "";
   const lastChar = name.trim().slice(-1).toLowerCase();
   return lastChar === "s" ? `${name}' Turn` : `${name}'s Turn`;
+};
+
+// Utility to get a random sentence from an array.
+export const getRandomSentence = (sentencesArray: any) => {
+  const randomIndex = Math.floor(Math.random() * sentencesArray.length);
+  return sentencesArray[randomIndex];
+};
+
+// Plays a random sunk ship sound effect.
+export const playRandomSunkShipSound = () => {
+  const files = ["1.wav", "2.wav", "3.wav", "4.wav"];
+  const randomFile = files[Math.floor(Math.random() * files.length)];
+  const audio = new Audio(new URL(`../assets/sounds/Game/SunkShip/${randomFile}`, import.meta.url).toString());
+  audio.play().catch((error) => console.error("SunkShip sound playback failed:", error));
 };

@@ -11,24 +11,29 @@ import { getRoomList } from "../utils/utils";
 import "./LobbyPage.css";
 import config from "../config";
 
+// Main component for the lobby page.
 const LobbyPage: React.FC = () => {
   const [rooms, setRooms] = useState<RoomState[]>([]);  
   const [error, setError] = useState<string>("");
   const navigate = useNavigate();
   const { playerName, setPlayerName } = usePlayer();
+
   const forwardButtonSound = new Audio(ButtonForwardAudio);
   const profileButtonSound = new Audio(ButtonProfileAudio);
 
+  // Plays sound for forward navigation button.
   const playButtonSound = () => {
     forwardButtonSound.currentTime = 0;
     forwardButtonSound.play().catch((err) => console.error("Error playing button sound:", err));
   };
 
+  // Plays sound for changing profile button.
   const playProfileButtonSound = () => {
     profileButtonSound.currentTime = 0;
     profileButtonSound.play().catch((err) => console.error("Error playing profile button sound:", err));
   };
 
+  // Fetches available rooms from backend on mount and every 3 seconds.
   useEffect(() => {
     const fetchRooms = async () => {
       try {
@@ -41,11 +46,11 @@ const LobbyPage: React.FC = () => {
     };
 
     fetchRooms();
-
-    const interval = setInterval(fetchRooms, 5000);
+    const interval = setInterval(fetchRooms, 3000);
     return () => clearInterval(interval);
   }, []);
 
+  // Restores player name from localStorage or redirect if missing.
   useEffect(() => {
     if (!playerName) {
       const savedName = localStorage.getItem("playerName");
@@ -57,6 +62,7 @@ const LobbyPage: React.FC = () => {
     }
   }, [playerName, navigate, setPlayerName]);
 
+  // Plays lobby intro and background music on mount.
   useEffect(() => {
     const audioStart = new Audio(IntroLobbyAudio);
     const audioBackground = new Audio(IntroLobbyBackground);
@@ -79,6 +85,7 @@ const LobbyPage: React.FC = () => {
     };
   }, []);
 
+  // Joins an existing room via WebSocket and navigate to room page.
   const joinRoom = async (room: RoomState) => {
     playButtonSound();
     try {
@@ -104,6 +111,7 @@ const LobbyPage: React.FC = () => {
     }
   };
 
+  // Creates a new room and navigates to it.
   const createRoom = async () => {
     playButtonSound();
     try {

@@ -37,27 +37,27 @@
 }
 
 .placement-overlay-after {
-    position: absolute;
-    top: 0;
-    left: 0;
-    height: 100vh;
-    animation: slideInOut 6.5s linear infinite;
-    pointer-events: none;
-    background-color: var(--classicBlue);
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  animation: slideInOut 6.5s linear infinite;
+  pointer-events: none;
+  background-color: var(--classicBlue);
 }
 
 .hidden {
-    animation: none;
+  animation: none;
 }
 
 .board {
-    position: absolute;
-    top: 0;
-    left: 0;
-    height: 100vh;
-    width: 100vw;
-    pointer-events: none;
-    background-color: var(--classicBlue);
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  width: 100vw;
+  pointer-events: none;
+  background-color: var(--classicBlue);
 }
 
 .hidden {
@@ -89,31 +89,31 @@
 }
 
 .result-game-winner {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    animation: fadeInOutWinner 1s linear infinite;
-    pointer-events: none;
-    background-color: rgba(0, 70, 128, 0);
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  animation: fadeInOutWinner 1s linear infinite;
+  pointer-events: none;
+  background-color: rgba(0, 70, 128, 0);
 }
 
 .hidden {
-    animation: none;
+  animation: none;
 }
 
 .result-game-loser {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    animation: fadeInOutLoser 3s linear infinite;
-    pointer-events: none;
-    background-color: rgba(0, 70, 128, 0);
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  animation: fadeInOutLoser 3s linear infinite;
+  pointer-events: none;
+  background-color: rgba(0, 70, 128, 0);
 }
 
 .hidden {
-    animation: none;
+  animation: none;
 }

@@ -3,19 +3,17 @@ import { useNavigate } from "react-router-dom";
 import { usePlayer } from "./PlayerContext";
 import "./MainPage.css";
 import EvolutionLogo from "../assets/images/EVOLUTION_Logo.svg";
-import IntroSound from "../assets/sounds/Main/Intro.wav";
+import { handlePlaySound } from "../utils/utils";
 
+// Main component for the main page.
 const MainPage: React.FC = () => {
   const navigate = useNavigate();
   const { setPlayerName } = usePlayer();
+
   const [localPlayerName, setLocalPlayerName] = useState("");
   const [error, setError] = useState("");
 
-  const handlePlaySound = () => {
-    const audio = new Audio(IntroSound);
-    audio.play().catch((err) => console.error("Audio playback failed:", err));
-  };
-
+  // Validates name and enters the lobby.
   const handleEnterLobby = () => {
     if (localPlayerName.trim() === "") {
       setError("Please enter your name before proceeding.");

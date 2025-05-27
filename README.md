@@ -1,54 +1,22 @@
-# React + TypeScript + Vite
+<p align="center">
+  <img src="src/assets/images/EVOLUTION_Logo.svg" alt="Evolution Battleship Logo" width="135" style="vertical-align: middle; margin-right: 5px;"/><span style="vertical-align: middle; font-size: 2em; font-weight: bold;"> Battleship - Frontend</span>
+</p>
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
-Currently, two official plugins are available:
+## Description
+This is a two-player game and each player has a 10x10 canvas and five ships to place, each of a different type:
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- Destroyer (2 cells)
+- Cruiser (3 cells)
+- Submarine (3 cells)
+- Battleship (4 cells)
+- Carrier (5 cells)
 
-## Expanding the ESLint configuration
+A ship can be placed horizontally or vertically, but not diagonally.
+In addition, no ships can be in adjacent cells on the board.
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+Once placed, the players can attack the other player's board by issuing coordinates. A player wins by being the first to take down all the ships on the other player's board.
 
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
-```
+This project is built with **React**, **Vite**, and **TypeScript**, and connects to a Scala-based backend.
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
-```
+➡️ For more details of the backend project, please check out: [Evolution Battleship Backend](https://github.com/gsa-Evolution/BE_Evolution_Battleship)

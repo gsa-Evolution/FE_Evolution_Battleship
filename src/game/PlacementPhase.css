@@ -32,7 +32,7 @@
   position: absolute;
   top: 60px;
   left: 0;
-  background-image: url('../assets/images/Rotate.svg'); /* Replace with your PNG path */
+  background-image: url('../assets/images/Rotate.svg');
 }
 
 .rotate-button:hover {
@@ -50,7 +50,7 @@
   position: absolute;
   top: 0;
   left: 0;
-  background-image: url('../assets/images/Random.svg'); /* Replace with your PNG path */
+  background-image: url('../assets/images/Random.svg');
 }
 
 .random-button:hover {

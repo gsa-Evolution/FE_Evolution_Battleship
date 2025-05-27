@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { usePlayer } from "../lobby/PlayerContext";
-import { getRoomList, waitingAfterSentences, waitingBeforeSentences } from "../utils/utils";
+import { getRandomSentence, getRoomList, waitingAfterSentences, waitingBeforeSentences } from "../utils/utils";
 import { ShipType, shipLengths, Placement } from "../types/types";
 import "./PlacementPhase.css";
 import { PlacementBoard, PlacementWaitingBefore, PlacementWaitingAfter } from "../components/Overlay";
@@ -12,11 +12,12 @@ import PlaceShips from "../assets/sounds/Placement/Placement/PlaceShips/Place_Sh
 import { playBackButtonSound } from "../utils/utils";
 import config from "../config";
 
+// Main component for the ships' placement phase.
 const PlacementPhase: React.FC = () => {
   const { roomId } = useParams<{ roomId: string }>();
+  const { playerName } = usePlayer();
   const navigate = useNavigate();
   const wsRef = useRef<WebSocket | null>(null);
-  const { playerName } = usePlayer();
   const audioRefs = useRef<HTMLAudioElement[]>([]);
 
   const [roomName, setRoomName] = useState<string | null>(null);
@@ -30,6 +31,7 @@ const PlacementPhase: React.FC = () => {
   const [waitingForOpponentStartGame, setWaitingForOpponentStartGame] = useState(false);
   const [animatedCells, setAnimatedCells] = useState<{ row: number; column: number }[]>([]);
 
+  // Plays random waiting sound loop depending if the waiting is before or after the ship placement phase.
   const playRandomSoundLoop = (folder: string) => {
     stopAllSounds();
   
@@ -63,6 +65,7 @@ const PlacementPhase: React.FC = () => {
     }
   };
 
+  // Stops all currently playing sounds.
   const stopAllSounds = () => {
     audioRefs.current.forEach((audio) => {
       audio.pause();
@@ -71,35 +74,32 @@ const PlacementPhase: React.FC = () => {
     audioRefs.current = [];
   };
 
+  // Plays waiting sounds depending on opponent status.
   useEffect(() => {
     if (waitingForOpponentEnterRoom && !waitingForOpponentStartGame) {
       playRandomSoundLoop("../assets/sounds/Placement/WaitingBefore");
     } else if (waitingForOpponentStartGame && !waitingForOpponentEnterRoom) {
       playRandomSoundLoop("../assets/sounds/Placement/WaitingAfter");
     }
-  }, [waitingForOpponentEnterRoom, waitingForOpponentStartGame]);
+  }, [waitingForOpponentEnterRoom, waitingForOpponentStartGame]); 
 
-  const getRandomSentence = (sentencesArray: any) => {
-    const randomIndex = Math.floor(Math.random() * sentencesArray.length);
-    return sentencesArray[randomIndex];
-  };  
-
+  // Toggles ship orientation (horizontal/vertical) with validation.
   const toggleOrientation = () => {
     if (selectedPlacement) {
       const newOrientation = selectedPlacement.orientation === "Horizontal" ? "Vertical" : "Horizontal";
       const length = shipLengths[selectedPlacement.shipType];
       const { row, column } = selectedPlacement.startCoordinate;
 
-      // Validate if the new orientation would go out of bounds
+      // Validates if the new orientation would go out of bounds.
       if (
-        (newOrientation === "Vertical" && row - (length - 1) < 0) || // Vertical out of bounds (upwards)
-        (newOrientation === "Horizontal" && column + (length - 1) >= 10) // Horizontal out of bounds (rightwards)
+        (newOrientation === "Vertical" && row - (length - 1) < 0) || // Vertical out of bounds (upwards).
+        (newOrientation === "Horizontal" && column + (length - 1) >= 10) // Horizontal out of bounds (rightwards).
       ) {
         setError("Cannot rotate ship, it would go out of bounds!");
         return;
       }
 
-      // Update the placement with the new orientation
+      // Updates the placement with the new orientation.
       const updatedPlacement: Placement = {
         ...selectedPlacement,
         orientation: newOrientation,
@@ -126,33 +126,36 @@ const PlacementPhase: React.FC = () => {
     }
   };
 
+  // Selects a ship for placement or editing.
   const handleShipClick = (placement: Placement) => {
     setSelectedPlacement(placement);
     setSelectedShip(placement.shipType);
   };
 
+  // Starts dragging a ship from the board.
   const handleDragStart = (placement: Placement) => {
     setSelectedPlacement(placement);
     setSelectedShip(placement.shipType);
     setPlacements((prev) => prev.filter((p) => p.shipType !== placement.shipType));
   };
 
+  // Shows ship placement preview on grid hover.
   const handleDragOver = (row: number, column: number, orientation: "Horizontal" | "Vertical") => {
     if (selectedShip) {
       const length = shipLengths[selectedShip];
       const newPreview: { row: number; column: number }[] = [];
 
-      // Validate if the preview is out of bounds
+      // Validates if the preview is out of bounds.
       if (
-        (orientation === "Vertical" && row - (length - 1) < 0) || // Vertical out of bounds
-        (orientation === "Horizontal" && column + (length - 1) >= 10) // Horizontal out of bounds
+        (orientation === "Vertical" && row - (length - 1) < 0) || // Vertical out of bounds.
+        (orientation === "Horizontal" && column + (length - 1) >= 10) // Horizontal out of bounds.
       ) {
-        setPreviewCoordinates([]); // Clear preview if out of bounds
+        setPreviewCoordinates([]);
         return;
       }
 
       for (let i = 0; i < length; i++) {
-        const newRow = orientation === "Horizontal" ? row : row - i; // Reverse vertical placement
+        const newRow = orientation === "Horizontal" ? row : row - i;
         const newColumn = orientation === "Horizontal" ? column + i : column;
         newPreview.push({ row: newRow, column: newColumn });
       }
@@ -160,15 +163,16 @@ const PlacementPhase: React.FC = () => {
     }
   };
 
+  // Drops a ship onto the grid, with validation and animation.
   const handleDrop = (row: number, column: number, orientation: "Horizontal" | "Vertical") => {
     setPreviewCoordinates([]);
     if (selectedShip) {
       const length = shipLengths[selectedShip];
 
-      // Validate if the placement is out of bounds
+      // Validates if the placement is out of bounds.
       if (
-        (orientation === "Vertical" && row - (length - 1) < 0) || // Vertical out of bounds
-        (orientation === "Horizontal" && column + (length - 1) >= 10) // Horizontal out of bounds
+        (orientation === "Vertical" && row - (length - 1) < 0) || // Vertical out of bounds.
+        (orientation === "Horizontal" && column + (length - 1) >= 10) // Horizontal out of bounds.
       ) {
         setError("Ship placement is out of bounds!");
         return;
@@ -218,6 +222,7 @@ const PlacementPhase: React.FC = () => {
     }
   };
 
+  // Returns to lobby, stop sounds, and close WebSocket.
   const handleBackToLobby = () => {
     stopAllSounds();
     playBackButtonSound();
@@ -228,18 +233,20 @@ const PlacementPhase: React.FC = () => {
     navigate("/lobby", { state: { playerName, fromRoom: true } });
   };
 
+  // Gets all coordinates occupied by a ship placement.
   const getOccupiedCoordinates = (placement: Placement): { row: number; column: number }[] => {
     const { startCoordinate, orientation, shipType } = placement;
     const length = shipLengths[shipType];
     const coordinates: { row: number; column: number }[] = [];
     for (let i = 0; i < length; i++) {
-      const row = orientation === "Horizontal" ? startCoordinate.row : startCoordinate.row - i; // Reverse vertical placement
+      const row = orientation === "Horizontal" ? startCoordinate.row : startCoordinate.row - i;
       const column = orientation === "Horizontal" ? startCoordinate.column + i : startCoordinate.column;
       coordinates.push({ row, column });
     }
     return coordinates;
   };
 
+  // Places all ships randomly on the board.
   const handleRandomPlacement = () => {
     const randomSounds = [RandomButton1, RandomButton2];
     const randomSound = randomSounds[Math.floor(Math.random() * randomSounds.length)];
@@ -268,7 +275,7 @@ const PlacementPhase: React.FC = () => {
   
         const newCoordinates = getOccupiedCoordinates(newPlacement);
   
-        // Check if the placement is valid (no intersections and within bounds)
+        // Checks if the placement is valid (no intersections and within bounds).
         const isOverlapping = placements.some((p) => {
           const occupiedCoordinates = getOccupiedCoordinates(p);
           return newCoordinates.some((coord) =>
@@ -307,6 +314,7 @@ const PlacementPhase: React.FC = () => {
     setTimeout(() => setAnimatedCells([]), 1000);
   };
 
+  // Prepares placements for backend API.
   const transformPlacementsForBackend = (placements: Placement[]) => {
     return placements.map(({ startCoordinate, orientation, shipType }) => ({
       startCoordinate,
@@ -315,12 +323,14 @@ const PlacementPhase: React.FC = () => {
     }));
   };
 
+  // Redirects to home if player name is missing.
   useEffect(() => {
     if (!playerName) {
       navigate("/");
     }
   }, [playerName, navigate]);
 
+  // WebSocket connection for real-time room/game updates.
   useEffect(() => {
     const ws = new WebSocket(`${config.protocol === "http" ? "ws" : "wss"}://${config.baseUrl}/join/${roomId}/${playerName}`);
     wsRef.current = ws;
@@ -377,6 +387,7 @@ const PlacementPhase: React.FC = () => {
     };
   }, [roomId, playerName, navigate]);
 
+  // Fetches room details from backend.
   useEffect(() => {
     const fetchRoomDetails = async () => {
       try {
@@ -395,13 +406,17 @@ const PlacementPhase: React.FC = () => {
     fetchRoomDetails();
   }, [roomId]);
 
+  // Render UI: waiting screens or placement board.
   return (
     <>
+      {/* Overlays for waiting animations */}
       <PlacementWaitingBefore triggerAnimation={waitingForOpponentEnterRoom} />
       <PlacementWaitingAfter triggerAnimation={waitingForOpponentStartGame} />
+      {/* Overlay for placement board */}
       <PlacementBoard triggerAnimation={waitingForOpponentEnterRoom || waitingForOpponentStartGame} />
       <div className="full-background">
         <div className="placement-phase-container">
+          {/* Waiting for opponent to join */}
           {waitingForOpponentEnterRoom ? (
             <div className="waiting-container">
               <h1 className="waiting-title">
@@ -420,6 +435,7 @@ const PlacementPhase: React.FC = () => {
               </button>
             </div>
           ) : waitingForOpponentStartGame ? (
+            // Waiting for opponent to finish placement.
             <div className="waiting-container">
               <h1 className="waiting-title">
                 {getRandomSentence(waitingAfterSentences)}
@@ -442,11 +458,11 @@ const PlacementPhase: React.FC = () => {
               {error && <p style={{ color: "red" }}>{error}</p>}
 
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop:"50px" }}>
-                {/* Ship buttons on the left */}
+                {/* Ship selection buttons on the left */}
                 <div style={{ flex: "0 0 auto" }}>
                   <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-start", gap: "10px" }}>
                     {Object.keys(shipLengths)
-                      .sort((a, b) => shipLengths[b as ShipType] - shipLengths[a as ShipType]) // Sort ships by size
+                      .sort((a, b) => shipLengths[b as ShipType] - shipLengths[a as ShipType]) // Sort ships by size.
                       .map((ship) => (
                         <div
                           key={ship}
@@ -454,16 +470,16 @@ const PlacementPhase: React.FC = () => {
                           onDragStart={() => setSelectedShip(ship as ShipType)}
                           style={{
                             display: "flex",
-                            flexDirection: "row", // Horizontal layout
+                            flexDirection: "row",
                             alignItems: "center",
                             justifyContent: "center",
-                            width: `${shipLengths[ship as ShipType] * 40}px`, // Width based on ship size
-                            height: "40px", // Fixed height
+                            width: `${shipLengths[ship as ShipType] * 40}px`,
+                            height: "40px",
                             backgroundColor: placements.some((p) => p.shipType === ship) ? "#004680" : "#6297AC",
                             color: "white",
                             cursor: placements.some((p) => p.shipType === ship) ? "not-allowed" : "grab",
                             position: "relative",
-                            border: "1px solid white", // White outline
+                            border: "1px solid white",
                           }}
                         >
                           {/* Horizontal bars representing ship size */}
@@ -517,7 +533,7 @@ const PlacementPhase: React.FC = () => {
                       Array.from({ length: 10 }).map((_, column) => {
                         const placement = placements.find((p) =>
                           Array.from({ length: shipLengths[p.shipType] }).some((_, i) => {
-                            const shipRow = p.orientation === "Horizontal" ? p.startCoordinate.row : p.startCoordinate.row - i; // Reverse vertical placement
+                            const shipRow = p.orientation === "Horizontal" ? p.startCoordinate.row : p.startCoordinate.row - i;
                             const shipColumn = p.orientation === "Horizontal" ? p.startCoordinate.column + i : p.startCoordinate.column;
                             return shipRow === row && shipColumn === column;
                           })
@@ -555,6 +571,7 @@ const PlacementPhase: React.FC = () => {
                     )}
                   </div>
                   <div className="bottom-buttons">
+                    {/* Lobby and Battle! buttons */}
                     <button
                       className="back-to-lobby-button-placement"
                       onClick={handleBackToLobby}
@@ -595,9 +612,10 @@ const PlacementPhase: React.FC = () => {
                   </div>
                 </div>
 
-                {/* Buttons on the right */}
+                {/* Action buttons on the right */}
                 <div style={{ flex: "0 0 auto", position: "relative", height: "150px", width: "50px" }}>
                   <div className="button-container">
+                    {/* Random and rotate buttons */}
                     <button className="icon-button random-button" onClick={handleRandomPlacement} />
                     {selectedPlacement && (
                       <button className="icon-button rotate-button" onClick={toggleOrientation} />

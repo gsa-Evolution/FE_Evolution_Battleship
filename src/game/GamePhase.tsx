@@ -3,19 +3,19 @@ import { useParams, useNavigate } from "react-router-dom";
 import { usePlayer } from "../lobby/PlayerContext";
 import { RoomState, CellType, Coordinate, BoardCell, GameState, GameResult, shipLengths } from "../types/types";
 import { GameBoard, ResultGameWinner, ResultGameLoser } from "../components/Overlay";
-import { getRoomList, getTurnLabel, playBackButtonSound } from "../utils/utils";
+import { getRandomSentence, getRoomList, getTurnLabel, playBackButtonSound, playRandomSunkShipSound } from "../utils/utils";
 import StartGame from "../assets/sounds/Game/Start_Game.wav";
 import GameBackground from "../assets/sounds/Game/Game_Background.wav";
 import EvolutionLogo from "../assets/images/Logo.svg";
 import "./GamePhase.css";
 import config from "../config";
 
+// Main component for the game phase.
 const GamePhase: React.FC = () => {
   const { roomId } = useParams<{ roomId: string }>();
   const { playerName } = usePlayer();
   const navigate = useNavigate();
   const wsRef = useRef<WebSocket | null>(null);
-
   const [gameState, setGameState] = useState<GameState>({
     yourTurn: false,
     yourBoard: [],
@@ -31,6 +31,7 @@ const GamePhase: React.FC = () => {
   const previousYourBoard = useRef<BoardCell[]>([]);
   const previousOpponentBoard = useRef<BoardCell[] | null>(null);
 
+  // Gets current room and opponent info.
   const currentRoomId = rooms.find((room) => room.id === roomId);
   const currentRoomName = currentRoomId?.roomName || "Unknown";
   const opponentName =
@@ -38,6 +39,7 @@ const GamePhase: React.FC = () => {
       ? currentRoomId.playersNames[1]
       : currentRoomId?.playersNames[0];
 
+  // Sentences for win/lose overlays.
   const winnerSentences = [
     "you have proven your might on the battlefield!",
     "victory is yours as your strategy prevails!",
@@ -62,13 +64,9 @@ const GamePhase: React.FC = () => {
     "the battle is lost and the seas mock your efforts.",
     "you have been overpowered and undone by your own mistakes.",
     "your strategy sinks as your fleet falls apart."
-  ];  
+  ];
 
-  const getRandomSentence = (sentencesArray: any) => {
-    const randomIndex = Math.floor(Math.random() * sentencesArray.length);
-    return sentencesArray[randomIndex];
-  };
-
+  // Plays random attack sound, hit or miss.
   const playRandomSoundAttack = (folder: string) => {
     const soundFiles = {
       "../assets/sounds/Game/Hit": [
@@ -87,6 +85,7 @@ const GamePhase: React.FC = () => {
     }
   };
 
+  // Fetches room list from backend.
   useEffect(() => {
     const fetchRooms = async () => {
       try {
@@ -99,6 +98,7 @@ const GamePhase: React.FC = () => {
     fetchRooms();
   }, [gameState]);
 
+  // WebSocket connection for real-time game updates.
   useEffect(() => {
     const ws = new WebSocket(`${config.protocol === "http" ? "ws" : "wss"}://${config.baseUrl}/join/${roomId}/${playerName}`);
     wsRef.current = ws;
@@ -122,10 +122,10 @@ const GamePhase: React.FC = () => {
             }
           });
 
-          // Update the newly attacked cells for animation
+          // Updates the newly attacked cells for animation.
           setNewlyAttackedCells(newAttacks);
 
-          // Play sound for the last played cell
+          // Plays sound for the last played cell.
           const lastCell = newAttacks[newAttacks.length - 1];
           if (lastCell) {
             const lastCellResultOpponent = message.yourBoard.find(
@@ -140,7 +140,7 @@ const GamePhase: React.FC = () => {
             }
           }
 
-          // Update the game state
+          // Updates the game state.
           setGameState({
             yourTurn: message.yourTurn,
             yourBoard: message.yourBoard.map(([coordinate, type]: [Coordinate, CellType]) => ({
@@ -155,7 +155,7 @@ const GamePhase: React.FC = () => {
               : null,
           });
 
-          // Update the previous board state
+          // Updates the previous board state.
           previousYourBoard.current = message.yourBoard.map(([coordinate, type]: [Coordinate, CellType]) => ({
             coordinate,
             type,
@@ -186,6 +186,7 @@ const GamePhase: React.FC = () => {
     };
   }, [roomId, playerName, opponentName]);
 
+  // Shows overlay when it's not the player's turn.
   useEffect(() => {
     if (!gameState?.yourTurn) {
       setShowOpponentOverlay(true);
@@ -194,19 +195,19 @@ const GamePhase: React.FC = () => {
     }
   }, [gameState?.yourTurn]);
 
+  // Animates newly attacked cells.
   useEffect(() => {
     if (newlyAttackedCells.length > 0) {
       const timeout = setTimeout(() => {
         setNewlyAttackedCells([]);
-      }, 1000); // Match the animation duration
+      }, 1000);
 
       return () => clearTimeout(timeout);
     }
   }, [newlyAttackedCells]);
 
+  // Plays start game sound once.
   const startGameAudioRef = useRef<HTMLAudioElement | null>(null);
-  const gameBackgroundAudioRef = useRef<HTMLAudioElement | null>(null);
-
   useEffect(() => {
     if (!startGameAudioRef.current) {
       startGameAudioRef.current = new Audio(StartGame);
@@ -226,6 +227,8 @@ const GamePhase: React.FC = () => {
     };
   }, []);
 
+  // Plays background game sound in loop.
+  const gameBackgroundAudioRef = useRef<HTMLAudioElement | null>(null);
   useEffect(() => {
     if (!gameBackgroundAudioRef.current) {
       gameBackgroundAudioRef.current = new Audio(GameBackground);
@@ -245,6 +248,7 @@ const GamePhase: React.FC = () => {
     };
   }, []);
 
+  // Stops start game sound on game end.
   useEffect(() => {
     if (gameResult && startGameAudioRef.current) {
       startGameAudioRef.current.pause();
@@ -252,9 +256,9 @@ const GamePhase: React.FC = () => {
     }
   }, [gameResult]);
 
+  // Plays victory or defeat sound on game end.
   const victorySoundRef = useRef<HTMLAudioElement | null>(null);
   const defeatSoundRef = useRef<HTMLAudioElement | null>(null);
-
   useEffect(() => {
     if (gameResult?.winner === playerName) {
       const victorySound = new Audio(new URL("../assets/sounds/Game/Victory/Victory.wav", import.meta.url).toString());
@@ -274,7 +278,7 @@ const GamePhase: React.FC = () => {
     }
 
     return () => {
-      // Cleanup: Stop and reset both sounds
+      // Stops and reset both sounds.
       if (victorySoundRef.current) {
         victorySoundRef.current.pause();
         victorySoundRef.current.currentTime = 0;
@@ -286,11 +290,11 @@ const GamePhase: React.FC = () => {
     };
   }, [gameResult]);
 
+  // Handles back to lobby button.
   const handleBackToLobby = () => {
-    // Play back button sound
     playBackButtonSound();
 
-    // Stop and reset both sounds when navigating back to the lobby
+    // Stops and reset both sounds when navigating back to the lobby.
     if (victorySoundRef.current) {
       victorySoundRef.current.pause();
       victorySoundRef.current.currentTime = 0;
@@ -304,6 +308,7 @@ const GamePhase: React.FC = () => {
     navigate("/lobby", { state: { fromRoom: true } });
   };
 
+  // Handles cell click to attack opponent.
   const handleCellClick = (coordinate: Coordinate) => {
     if (!gameState?.yourTurn) {
       setError("It's not your turn!");
@@ -317,12 +322,13 @@ const GamePhase: React.FC = () => {
           coordinate,
         })
       );
-      setLastAttackedCellOpponent(coordinate); // Track the attacked cell on the opponent's board
+      setLastAttackedCellOpponent(coordinate); // Tracks the attacked cell on the opponent's board.
     } else {
       setError("WebSocket is not connected.");
     }
   };
 
+  // Renders the opponent's board.
   const renderBoardOpponent = (board: BoardCell[] | null, isOpponent: boolean) => {
     const grid = Array.from({ length: 10 }, () =>
       Array.from({ length: 10 }, () => null as CellType)
@@ -365,6 +371,7 @@ const GamePhase: React.FC = () => {
     );
   };
 
+  // Render the player's board.
   const renderBoardPlayer = (board: BoardCell[] | null, isOpponent: boolean) => {
     const grid = Array.from({ length: 10 }, () =>
       Array.from({ length: 10 }, () => null as CellType)
@@ -422,6 +429,7 @@ const GamePhase: React.FC = () => {
     );
   };
 
+  // Renders player's sunk or not sunk ships on the bottom right.
   const renderShipsPlayer = (sunkShips: string[], isOpponent: boolean) => {
     const allShips = ["Carrier", "Battleship", "Cruiser", "Submarine", "Destroyer"];
   
@@ -451,9 +459,9 @@ const GamePhase: React.FC = () => {
               flexDirection: "row",
               alignItems: "center",
               justifyContent: "center",
-              width: `${shipLengths[ship as keyof typeof shipLengths] * 40}px`, // Width based on ship size
-              height: "40px", // Fixed height
-              backgroundColor: sunkShips.includes(ship) ? "red" : "var(--classicBlue)", // Red for sunk ships, blue for others
+              width: `${shipLengths[ship as keyof typeof shipLengths] * 40}px`,
+              height: "40px",
+              backgroundColor: sunkShips.includes(ship) ? "red" : "var(--classicBlue)",
               color: "white",
               position: "relative",
               border: "1px solid white",
@@ -478,7 +486,7 @@ const GamePhase: React.FC = () => {
                   left: -1,
                   width: "100%",
                   height: "100%",
-                  backgroundColor: "rgba(0, 70, 128, 0.75)", // Translucent black overlay
+                  backgroundColor: "rgba(0, 70, 128, 0.75)",
                   border: "1px solid rgba(255, 255, 255, 0)",
                   pointerEvents: "none",
                 }}
@@ -509,6 +517,7 @@ const GamePhase: React.FC = () => {
     );
   };
 
+  // Render opponent's sunk or not sunk ships on the top left.
   const renderShipsOpponent = (sunkShips: string[], isOpponent: boolean) => {
     const allShips = ["Carrier", "Battleship", "Submarine", "Cruiser", "Destroyer"];
   
@@ -538,9 +547,9 @@ const GamePhase: React.FC = () => {
               flexDirection: "row",
               alignItems: "center",
               justifyContent: "center",
-              width: `${shipLengths[ship as keyof typeof shipLengths] * 40}px`, // Width based on ship size
-              height: "40px", // Fixed height
-              backgroundColor: sunkShips.includes(ship) ? "red" : "var(--classicBlue)", // Red for sunk ships, blue for others
+              width: `${shipLengths[ship as keyof typeof shipLengths] * 40}px`,
+              height: "40px",
+              backgroundColor: sunkShips.includes(ship) ? "red" : "var(--classicBlue)",
               color: "white",
               position: "relative",
               border: "1px solid white",
@@ -581,8 +590,8 @@ const GamePhase: React.FC = () => {
     );
   };
 
+  // Plays sound when opponent's board changes after attack.
   const hasMountedOpponentBoard = useRef(false);
-
   useEffect(() => {
     if (!hasMountedOpponentBoard.current) {
       hasMountedOpponentBoard.current = true;
@@ -597,19 +606,19 @@ const GamePhase: React.FC = () => {
       gameState.opponentBoard &&
       previousOpponentBoard.current
     ) {
-      // Find the cell in the new opponent board
+      // Finds the cell in the new opponent board.
       const newCell = gameState.opponentBoard.find(
         (cell) =>
           cell.coordinate.row === lastAttackedCellOpponent.row &&
           cell.coordinate.column === lastAttackedCellOpponent.column
       );
-      // Find the cell in the previous opponent board
+      // Finds the cell in the previous opponent board.
       const prevCell = previousOpponentBoard.current.find(
         (cell) =>
           cell.coordinate.row === lastAttackedCellOpponent.row &&
           cell.coordinate.column === lastAttackedCellOpponent.column
       );
-      // If the cell type changed, play the sound
+      // If the cell type changed, plays the sound.
       if (newCell && (!prevCell || newCell.type !== prevCell.type)) {
         if (newCell.type === "HitShip") {
           playRandomSoundAttack("../assets/sounds/Game/Hit");
@@ -618,33 +627,25 @@ const GamePhase: React.FC = () => {
         }
       }
     }
-    // Update the previous opponent board for next comparison
+    // Updates the previous opponent board for next comparison.
     previousOpponentBoard.current = gameState.opponentBoard
       ? [...gameState.opponentBoard]
       : null;
   }, [gameState.opponentBoard, lastAttackedCellOpponent]);
 
+  // Plays sunk ship sound when a new ship is sunk.
   const hasMountedSunkShips = useRef(false);
-
   useEffect(() => {
     if (!currentRoomId?.sunkShips) return;
 
-    // Avoid playing sound on first mount
+    // Avoids playing sound on first mount.
     if (!hasMountedSunkShips.current) {
       hasMountedSunkShips.current = true;
       previousSunkShips.current = { ...currentRoomId.sunkShips };
       return;
     }
 
-    // Helper to play random sunk ship sound
-    const playRandomSunkShipSound = () => {
-      const files = ["1.wav", "2.wav", "3.wav", "4.wav"];
-      const randomFile = files[Math.floor(Math.random() * files.length)];
-      const audio = new Audio(new URL(`../assets/sounds/Game/SunkShip/${randomFile}`, import.meta.url).toString());
-      audio.play().catch((error) => console.error("SunkShip sound playback failed:", error));
-    };
-
-    // Check for new sunk ships for both players
+    // Checks for new sunk ships for both players.
     [playerName, opponentName].forEach((name) => {
       if (!name) return;
       const prev = previousSunkShips.current[name] || [];
@@ -655,10 +656,11 @@ const GamePhase: React.FC = () => {
       }
     });
 
-    // Update previous sunk ships after check
+    // Updates previous sunk ships after check.
     previousSunkShips.current = { ...currentRoomId.sunkShips };
   }, [currentRoomId?.sunkShips, playerName, opponentName]);
 
+  // Renders end game overlay if game is finished.
   if (gameResult) {
     return (
       <>
@@ -699,6 +701,7 @@ const GamePhase: React.FC = () => {
     );
   }
 
+  // Shows loading if game state is not ready.
   if (!gameState) {
     console.error("Game state is undefined:", gameState);
     return <p className="loading-gamestate">Loading game state...</p>;
@@ -708,33 +711,38 @@ const GamePhase: React.FC = () => {
     <>
       <GameBoard />
       <div>
+        {/* Overlay when it's opponent's turn */}
         {!gameState.yourTurn && showOpponentOverlay && <div className="overlay-opponent-turn" />}
       </div>
 
       <div className="game-phase-container">
-        {/* Opponent's ships on the top left */}
+        {/* Opponent's sunk or not sunk ships on the top left */}
         <div className="opponent-sunk-ships">
           {opponentName && currentRoomId?.sunkShips ? renderShipsOpponent(currentRoomId.sunkShips[opponentName] || [], true) : null}
         </div>
 
+        {/* Opponent's name and board */}
         <h2 className="opponent-name">{opponentName}</h2>
         {renderBoardOpponent(gameState.opponentBoard, true)}
 
+        {/* Turn indicator and error messages */}
         <h1 className="player-turn">
           {gameState.yourTurn ? getTurnLabel(playerName) : getTurnLabel(opponentName || "Unknown")}
         </h1>
         {error && <p style={{ color: "red" }}>{error}</p>}
 
+        {/* Player's name and board */}
         <h2 className="player-name" style={{ opacity: gameState.yourTurn ? 0.35 : 1, position: gameState.yourTurn ? "static" : "relative" }}>
           {playerName}
         </h2>
         {renderBoardPlayer(gameState.yourBoard, false)}
              
-        {/* Player's ships on the bottom right */}
+        {/* Player's sunk or not sunk ships on the bottom right */}
         <div className="player-sunk-ships">
           {playerName && currentRoomId?.sunkShips ? renderShipsPlayer(currentRoomId.sunkShips[playerName] || [], false) : null}
         </div>
   
+        {/* Back to lobby button */}
         <button
           className="back-to-lobby-button"
           onClick={handleBackToLobby}
